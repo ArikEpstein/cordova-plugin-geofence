@@ -43,7 +43,8 @@ func log(_ messages: [String]) {
             object: nil
         )
     }
-
+    
+    @objc(initialize:)
     func initialize(_ command: CDVInvokedUrlCommand) {
         log("Plugin initialization")
         //let faker = GeofenceFaker(manager: geoNotificationManager)
@@ -93,6 +94,7 @@ func log(_ messages: [String]) {
         )
     }
 
+    @objc(addOrUpdate:)
     func addOrUpdate(_ command: CDVInvokedUrlCommand) {
         DispatchQueue.global(priority: priority).async {
             // do some task
@@ -105,7 +107,8 @@ func log(_ messages: [String]) {
             }
         }
     }
-
+    
+    @objc(getWatched:)
     func getWatched(_ command: CDVInvokedUrlCommand) {
         DispatchQueue.global(priority: priority).async {
             let watched = self.geoNotificationManager.getWatchedGeoNotifications()!
@@ -117,6 +120,7 @@ func log(_ messages: [String]) {
         }
     }
 
+    @objc(remove:)
     func remove(_ command: CDVInvokedUrlCommand) {
         DispatchQueue.global(priority: priority).async {
             for id in command.arguments {
@@ -128,7 +132,8 @@ func log(_ messages: [String]) {
             }
         }
     }
-
+    
+    @objc(removeAll:)
     func removeAll(_ command: CDVInvokedUrlCommand) {
         DispatchQueue.global(priority: priority).async {
             self.geoNotificationManager.removeAllGeoNotifications()
@@ -139,7 +144,7 @@ func log(_ messages: [String]) {
         }
     }
 
-    func didReceiveTransition (_ notification: Notification) {
+    @objc func didReceiveTransition (_ notification: Notification) {
         log("didReceiveTransition")
         if let geoNotificationString = notification.object as? String {
 
@@ -149,9 +154,9 @@ func log(_ messages: [String]) {
         }
     }
 
-    func didReceiveLocalNotification (_ notification: Notification) {
+    @objc func didReceiveLocalNotification (_ notification: Notification) {
         log("didReceiveLocalNotification")
-        if UIApplication.shared.applicationState != UIApplicationState.active {
+        if UIApplication.shared.applicationState != UIApplication.State.active {
             var data = "undefined"
             if let uiNotification = notification.object as? UILocalNotification {
                 if let notificationData = uiNotification.userInfo?["geofence.notification.data"] as? String {
