@@ -13,18 +13,18 @@ module.exports = function(context) {
     run();
 
     function run() {
-        var cordova_util = context.requireCordovaModule('cordova-lib/src/cordova/util'),
+        var cordova_util = /* context.requireCordovaModule('cordova-lib/src/cordova/util'), */ require('cordova-lib/src/cordova/util'),
             ConfigParser = CORDOVA_VERSION >= 6.0
-                ? context.requireCordovaModule('cordova-common').ConfigParser
-                : context.requireCordovaModule('cordova-lib/src/configparser/ConfigParser'),
+                ? /* context.requireCordovaModule('cordova-common').ConfigParser */ require('cordova-common').ConfigParser
+                : /* context.requireCordovaModule('cordova-lib/src/configparser/ConfigParser'), */ require('cordova-lib/src/configparser/ConfigParser'),
             projectRoot = cordova_util.isCordova(),
             platform_ios,
             xml = cordova_util.projectConfig(projectRoot),
             cfg = new ConfigParser(xml),
             projectName = cfg.name(),
             platform_ios = CORDOVA_VERSION < 5.0
-                ? context.requireCordovaModule('cordova-lib/src/plugman/platforms')['ios']
-                : context.requireCordovaModule('cordova-lib/src/plugman/platforms/ios'),
+                ? /* context.requireCordovaModule('cordova-lib/src/plugman/platforms')['ios'] */ require('cordova-lib/src/plugman/platforms')['ios']
+                : /* context.requireCordovaModule('cordova-lib/src/plugman/platforms/ios'), */ require('cordova-lib/src/plugman/platforms/ios'),
             iosPlatformPath = path.join(projectRoot, 'platforms', 'ios'),
             iosProjectFilesPath = path.join(iosPlatformPath, projectName),
             xcconfigPath = path.join(iosPlatformPath, 'cordova', 'build.xcconfig'),
