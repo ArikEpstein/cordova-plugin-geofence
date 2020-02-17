@@ -75,6 +75,7 @@ func log(_ messages: [String]) {
         commandDelegate!.send(result, callbackId: command.callbackId)
     }
 
+    @objc(deviceReady:)
     func deviceReady(_ command: CDVInvokedUrlCommand) {
         let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
         commandDelegate!.send(pluginResult, callbackId: command.callbackId)
