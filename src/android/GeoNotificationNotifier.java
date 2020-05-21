@@ -19,7 +19,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import mx.grupodp.dp.R;
 
 public class GeoNotificationNotifier {
     private NotificationManager notificationManager;
@@ -71,7 +70,6 @@ public class GeoNotificationNotifier {
         }
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
                 .setVibrate(notification.getVibrate())
-                .setSmallIcon(R.drawable.ic_stat_onesignal_default)
                 .setLargeIcon(largeIcon)
                 .setAutoCancel(true)
                 .setContentTitle(notification.getTitle())
