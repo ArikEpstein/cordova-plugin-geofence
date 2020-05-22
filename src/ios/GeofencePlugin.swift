@@ -171,8 +171,7 @@ func log(_ messages: [String]) {
     }
 
     func evaluateJs (_ script: String) {
-      let wkWebView = webView as? WKWebView;
-      wkWebView.evaluateJavaScript(script, completionHandler: nil)
+        webView.evaluateJavaScript(script, completionHandler: nil)
     }
 }
 
