@@ -1,5 +1,6 @@
 package com.cowbell.cordova.geofence;
 
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -25,12 +26,18 @@ public class GeoNotificationNotifier {
     private Context context;
     private BeepHelper beepHelper;
     private Logger logger;
+    private NotificationChannel notificationChannel;
 
     public GeoNotificationNotifier(NotificationManager notificationManager, Context context) {
         this.notificationManager = notificationManager;
         this.context = context;
         this.beepHelper = new BeepHelper();
         this.logger = Logger.getLogger();
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+           notificationChannel = new NotificationChannel("channelId", "channelName", NotificationManager.IMPORTANCE_DEFAULT);
+           notificationManager.createNotificationChannel(notificationChannel);
+        }
     }
 
     protected Bitmap getBitmapUrl(String imageUrl, Notification notification) {
@@ -61,19 +68,35 @@ public class GeoNotificationNotifier {
         return bitmap;
     }
 
-    public void notify(Notification notification) {
+    public void notify(Notification notification, String transition) {
         notification.setContext(context);
-        Log.i("debug_cordova",notification.icon);
-        Bitmap largeIcon = notification.getLargeIcon();
-        if (notification.icon.contains("http")) {
-            largeIcon = getBitmapUrl(notification.icon,notification);
+        Log.i("debug_cordova", notification.icon);
+
+        NotificationCompat.Builder mBuilder = null;
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            mBuilder = new NotificationCompat.Builder(context, notificationChannel.getId());
+        } else {
+            mBuilder = new NotificationCompat.Builder(context);
         }
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
-                .setVibrate(notification.getVibrate())
-                .setLargeIcon(largeIcon)
+        mBuilder.setVibrate(notification.getVibrate())
+                .setSmallIcon(notification.getSmallIcon())
+                .setLargeIcon(notification.getLargeIcon())
                 .setAutoCancel(true)
-                .setContentTitle(notification.getTitle())
+                .setContentTitle(notification.getTitle().replace("$transition", transition))
                 .setContentText(notification.getText());
+
+//         Bitmap largeIcon = notification.getLargeIcon();
+//         if (notification.icon.contains("http")) {
+//             largeIcon = getBitmapUrl(notification.icon,notification);
+//         }
+
+//         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
+//                 .setVibrate(notification.getVibrate())
+//                 .setLargeIcon(largeIcon)
+//                 .setAutoCancel(true)
+//                 .setContentTitle(notification.getTitle())
+//                 .setContentText(notification.getText());
 
         if (notification.openAppOnClick) {
             String packageName = context.getPackageName();
@@ -84,10 +107,19 @@ public class GeoNotificationNotifier {
                 resultIntent.putExtra("geofence.notification.data", notification.getDataJson());
             }
 
-            TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-            stackBuilder.addNextIntent(resultIntent);
-            PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(
-                    notification.id, PendingIntent.FLAG_UPDATE_CURRENT);
+//             TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+//             stackBuilder.addNextIntent(resultIntent);
+//             PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(
+//                     notification.id, PendingIntent.FLAG_UPDATE_CURRENT);
+          resultIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+           PendingIntent resultPendingIntent =
+                    PendingIntent.getActivity(context,
+                         notification.id,
+                         resultIntent,
+                         PendingIntent.FLAG_UPDATE_CURRENT
+                    );
+
             mBuilder.setContentIntent(resultPendingIntent);
         }
         try {
@@ -98,6 +130,8 @@ public class GeoNotificationNotifier {
             beepHelper.startTone("beep_beep_beep");
             e.printStackTrace();
         }
+
+
         notificationManager.notify(notification.id, mBuilder.build());
         logger.log(Log.DEBUG, notification.toString());
     }

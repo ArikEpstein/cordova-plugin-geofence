@@ -110,9 +110,9 @@ public class GeofencePlugin extends CordovaPlugin {
     }
 
     public static void onTransitionReceived(List<GeoNotification> notifications) {
-        Log.d(TAG, "Transition Event Received!");
-        String js = "setTimeout('geofence.onTransitionReceived("
-            + Gson.get().toJson(notifications) + ")',0)";
+      Log.d(TAG, "Transition Event Received");
+      String js = "geofence.onTransitionReceived(" + Gson.get().toJson(notifications) + ");";
+
         if (webView == null) {
             Log.d(TAG, "Webview is null");
         } else {
@@ -123,7 +123,7 @@ public class GeofencePlugin extends CordovaPlugin {
     private void deviceReady() {
         Intent intent = cordova.getActivity().getIntent();
         String data = intent.getStringExtra("geofence.notification.data");
-        String js = "setTimeout('geofence.onNotificationClicked(" + data + ")',0)";
+        String js = "geofence.onNotificationClicked(" + data + ");";
 
         if (data == null) {
             Log.d(TAG, "No notifications clicked.");
