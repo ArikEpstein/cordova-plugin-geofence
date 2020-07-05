@@ -20,11 +20,18 @@ public class GeoNotification {
     }
 
     public Geofence toGeofence() {
-        return new Geofence.Builder()
+//         return new Geofence.Builder()
+//             .setRequestId(id)
+//             .setTransitionTypes(transitionType)
+//             .setCircularRegion(latitude, longitude, radius)
+//             .setExpirationDuration(Long.MAX_VALUE).build();
+
+           return new Geofence.Builder()
             .setRequestId(id)
-            .setTransitionTypes(transitionType)
             .setCircularRegion(latitude, longitude, radius)
-            .setExpirationDuration(Long.MAX_VALUE).build();
+            .setTransitionTypes(transitionType)
+            .setLoiteringDelay(1)
+            .setExpirationDuration(Geofence.NEVER_EXPIRE).build();
     }
 
     public String toJson() {
